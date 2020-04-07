@@ -346,10 +346,14 @@ class SpotifyOAuth(SpotifyAuthBase):
         server.handle_request()
 
         if server.auth_code is not None:
-            return server.auth_code
+            code = server.auth_code
+            server.server_close()
+            return code
         elif server.error is not None:
+            server.server_close()
             raise SpotifyOauthError("Received error from OAuth server: {}".format(server.error))
         else:
+            server.server_close()
             raise SpotifyOauthError("Server listening on localhost has not been accessed")
 
     def get_auth_response(self):
